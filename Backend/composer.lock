@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c514d8f7b9fc5970bdd94287905ef584",
+    "content-hash": "5e67f98b300d9e85d6f5bd60c9ef2b10",
     "packages": [
         {
             "name": "brick/math",
@@ -1332,6 +1332,69 @@
                 "source": "https://github.com/laravel/prompts/tree/v0.3.8"
             },
             "time": "2025-11-21T20:52:52+00:00"
+        },
+        {
+            "name": "laravel/sanctum",
+            "version": "v4.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/sanctum.git",
+                "reference": "47d26f1d310879ff757b971f5a6fc631d18663fd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/sanctum/zipball/47d26f1d310879ff757b971f5a6fc631d18663fd",
+                "reference": "47d26f1d310879ff757b971f5a6fc631d18663fd",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/console": "^11.0|^12.0",
+                "illuminate/contracts": "^11.0|^12.0",
+                "illuminate/database": "^11.0|^12.0",
+                "illuminate/support": "^11.0|^12.0",
+                "php": "^8.2",
+                "symfony/console": "^7.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^9.15|^10.8",
+                "phpstan/phpstan": "^1.10"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Sanctum\\SanctumServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Sanctum\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Laravel Sanctum provides a featherweight authentication system for SPAs and simple APIs.",
+            "keywords": [
+                "auth",
+                "laravel",
+                "sanctum"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/sanctum/issues",
+                "source": "https://github.com/laravel/sanctum"
+            },
+            "time": "2026-01-11T18:20:25+00:00"
         },
         {
             "name": "laravel/serializable-closure",
