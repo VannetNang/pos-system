@@ -5,15 +5,26 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Storage;
 
-class ProductController extends Controller
+class ProductController extends Controller implements HasMiddleware
 {
+    public static function middleware()
+    {
+        return [ 
+            new Middleware('auth:sanctum', except: ['index', 'show'])
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        // to get the creator info (user)
+        // return Product::with('creator')->get();
         return Product::all();
     }
 
@@ -35,7 +46,7 @@ class ProductController extends Controller
             $fields['imageUrl'] = $path;
         }
 
-        $product = Product::create($fields);
+        $product = $request->user()->products()->create($fields);
 
         return response()->json([
             'message' => 'Created product successfully!',
@@ -48,9 +59,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $product = Product::where('id', $id)->get();
-
-        return $product;
+        return Product::findOrFail($id);
     }
 
     /**
@@ -82,7 +91,7 @@ class ProductController extends Controller
         return response()->json([
             'message' => 'Updated product successfully!',
             'product' => $product,
-        ], 201);
+        ], 200);
     }
 
     /**
@@ -92,11 +101,14 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
+        if ($product->imageUrl && Storage::disk('public')->exists($product->imageUrl)) {
+            Storage::disk('public')->delete($product->imageUrl);
+        }
+
         $product->delete();
 
-        return [
+        return response()->json([
             'message' => 'Deleted product successfully!',
-            'product' => $product,
-        ];
+        ], 200);
     }
 }

@@ -18,4 +18,9 @@ class Product extends Model
         'stock_quantity'
     ];
 
+    // if using user(), no need to put foreignKey
+    // the default is: user_id
+    public function creator() {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
 }
