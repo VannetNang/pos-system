@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller implements HasMiddleware
@@ -33,6 +34,8 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function store(Request $request)
     {
+        Gate::authorize('modify', Product::class);
+
         $fields = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
