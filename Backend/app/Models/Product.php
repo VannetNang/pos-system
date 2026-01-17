@@ -23,4 +23,8 @@ class Product extends Model
     public function creator() {
         return $this->belongsTo(User::class, 'creator_id');
     }
+
+    public function carts() {
+        return $this->hasMany(Cart::class, 'product_id');
+    }
 }
