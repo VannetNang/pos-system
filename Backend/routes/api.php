@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -19,3 +20,5 @@ Route::prefix('/user')->group(function () {
 
     Route::middleware(['auth:sanctum'])->delete('/{id}', [UserController::class, 'deleteUser']);
 });
+
+Route::middleware('auth:sanctum')->apiResource('/carts', CartController::class);

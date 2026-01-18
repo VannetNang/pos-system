@@ -26,7 +26,15 @@ class ProductController extends Controller implements HasMiddleware
     {
         // to get the creator info (user)
         // return Product::with('creator')->get();
-        return Product::all();
+        $products = Product::all();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Products retrieved successfully.',
+            'data' => [
+                'products' => $products
+            ]
+        ], 200);
     }
 
     /**
@@ -52,8 +60,11 @@ class ProductController extends Controller implements HasMiddleware
         $product = $request->user()->products()->create($fields);
 
         return response()->json([
-            'message' => 'Created product successfully!',
-            'product' => $product,
+            'status' => 'success',
+            'message' => 'Product created successfully.',
+            'data' => [
+                'product' => $product
+            ]
         ], 201);
     }
 
@@ -62,7 +73,15 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function show(string $id)
     {
-        return Product::findOrFail($id);
+        $product = Product::findOrFail($id);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Product retrieved successfully.',
+            'data' => [
+                'product' => $product
+            ]
+        ], 200);
     }
 
     /**
@@ -92,8 +111,11 @@ class ProductController extends Controller implements HasMiddleware
         $product->update($fields);
 
         return response()->json([
-            'message' => 'Updated product successfully!',
-            'product' => $product,
+            'status' => 'success',
+            'message' => 'Product updated successfully.',
+            'data' => [
+                'product' => $product
+            ]
         ], 200);
     }
 
@@ -111,7 +133,8 @@ class ProductController extends Controller implements HasMiddleware
         $product->delete();
 
         return response()->json([
-            'message' => 'Deleted product successfully!',
+            'status' => 'success',
+            'message' => 'Product deleted successfully.'
         ], 200);
     }
 }
