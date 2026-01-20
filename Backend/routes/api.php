@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -22,3 +23,13 @@ Route::prefix('/user')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->apiResource('/carts', CartController::class);
+
+Route::middleware('auth:sanctum')->prefix('/orders')->group(function () {
+    Route::get('/', [OrderController::class, 'index']);
+    Route::get('/summary', [OrderController::class, 'orderSummary']);
+
+    // url for payment gateway
+    Route::prefix('/checkout')->group(function() {
+        Route::post('/cash', [OrderController::class, 'cashCheckout']);
+    });
+});
