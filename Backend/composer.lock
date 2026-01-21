@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e67f98b300d9e85d6f5bd60c9ef2b10",
+    "content-hash": "1182a0d9465a1513297fedeed53c3f2f",
     "packages": [
         {
             "name": "brick/math",
@@ -1051,6 +1051,58 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
+        },
+        {
+            "name": "khqr-gateway/bakong-khqr-php",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/davysrp/khqr-gateway.git",
+                "reference": "1df08d33ebb85b3b6b284205c422c3d6d8433973"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/davysrp/khqr-gateway/zipball/1df08d33ebb85b3b6b284205c422c3d6d8433973",
+                "reference": "1df08d33ebb85b3b6b284205c422c3d6d8433973",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "KHQR\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Force Fidele KIEN",
+                    "email": "forcefidele@gmail.com",
+                    "homepage": "https://fidele007.github.io",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A pure PHP implementation of the Bakong KHQR SDK",
+            "keywords": [
+                "bakong",
+                "khqr"
+            ],
+            "support": {
+                "issues": "https://github.com/fidele007/bakong-khqr-php/issues",
+                "source": "https://github.com/davysrp/khqr-gateway/tree/v1.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.github.com/sponsors/fidele007",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-05-08T09:06:57+00:00"
         },
         {
             "name": "laravel/framework",
