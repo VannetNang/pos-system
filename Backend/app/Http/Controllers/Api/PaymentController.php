@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Services\OrderCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use KHQR\BakongKHQR;
@@ -14,14 +15,12 @@ use KHQR\Models\IndividualInfo;
 
 class PaymentController extends Controller
 {
-    public function qrCheckout(Request $request) {
+    public function qrCheckout(Request $request, OrderCalculationService $calculator) {
         $cartItems = Cart::where('user_id', $request->user()->id)
                         ->with('product')
                         ->get();
 
-        $controller = new OrderController();
-
-        [$taxRate, $taxAmount, $subTotal, $total] = $controller->calculation($cartItems);
+        $calculation = $calculator->calculation($cartItems);
 
         foreach ($cartItems as $item) {
             if ($item->quantity > $item->product->stock_quantity) {
@@ -40,10 +39,10 @@ class PaymentController extends Controller
             'user_id' => $request->user()->id,
             'payment_method' => 'khqr',
             'status' => 'pending',
-            'total_price' => $total,
-            'sub_total_price' => $subTotal,
-            'tax_rate' => $taxRate,
-            'tax_amount' => $taxAmount
+            'total_price' => $calculation['total'],
+            'sub_total_price' => $calculation['subTotal'],
+            'tax_rate' => $calculation['taxRate'],
+            'tax_amount' => $calculation['taxAmount']
         ]);
 
         $individualInfo = new IndividualInfo(
@@ -51,7 +50,7 @@ class PaymentController extends Controller
             merchantName: config('bakong.merchant_name'),
             merchantCity: config('bakong.merchant_city'),
             currency: KHQRData::CURRENCY_KHR,
-            amount: $total,
+            amount: $calculation['total'],
             storeLabel: config('bakong.store_label'),
             terminalLabel: config('bakong.terminal_label')
         );

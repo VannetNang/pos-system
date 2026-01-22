@@ -6,34 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\OrderCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    // function for calculation (total, subTotal, taxRate, taxAmount)
-    public function calculation($cartItems) {
-        // per % rate  (tax = 10%)
-        $taxRate = 10;
-        $taxAmount = $taxRate / 100;
-        
-        // calculate total price with quantity   (no tax)
-        $subTotal = $cartItems->sum(function ($item) {
-            return $item->product->price * $item->quantity;
-        });
-
-        // calculate total price to pay   (with tax)
-        $totalWithoutTax = $subTotal * $taxAmount;
-        $total = $subTotal + $totalWithoutTax;
-
-        return [
-            $taxRate, 
-            $taxAmount, 
-            $subTotal, 
-            $total
-        ];
-    }
-
     // render all completed payment in DB
     public function index() {
         $orders = Order::where('status', 'completed')
@@ -59,7 +37,7 @@ class OrderController extends Controller
 
     // generate checkout summary data (total, subTotal, taxRate, taxAmount)
     // and items that we order
-    public function orderSummary(Request $request) {
+    public function orderSummary(Request $request, OrderCalculationService $calculator) {
         $cartItems = Cart::where('user_id', $request->user()->id)
                         ->with('product')
                         ->get();
@@ -81,29 +59,29 @@ class OrderController extends Controller
             ];
         });
 
-        [$taxRate, $taxAmount, $subTotal, $total] = $this->calculation($cartItems);
+        $calculation = $calculator->calculation($cartItems);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Order summary retrieved successfully.',
             'data' => [
                 'items' => $items,
-                'total' => $total,
-                'subTotal' => $subTotal,
-                'taxRate' => $taxRate,
-                'taxAmount' => $taxAmount
+                'total' => $calculation['total'],
+                'subTotal' => $calculation['subTotal'],
+                'taxRate' => $calculation['taxRate'],
+                'taxAmount' => $calculation['taxAmount']
             ]
         ], 200);
     }
 
     // payment method = cash
-    public function cashCheckout(Request $request){
+    public function cashCheckout(Request $request, OrderCalculationService $calculator){
     $request->validate([
         'payment_method' => ['required', 'in:cash']
     ]);
 
     try {
-        $order = DB::transaction(function () use ($request) {
+        $order = DB::transaction(function () use ($request, $calculator) {
 
             $cartItems = Cart::where('user_id', $request->user()->id)
                 ->with(['product' => function ($query) {
@@ -127,17 +105,16 @@ class OrderController extends Controller
                 }
             }
 
-            [$taxRate, $taxAmount, $subTotal, $total] =
-                $this->calculation($cartItems);
+            $calculation = $calculator->calculation($cartItems);
 
             $order = Order::create([
                 'user_id' => $request->user()->id,
                 'payment_method' => 'cash',
                 'status' => 'completed',
-                'total_price' => $total,
-                'sub_total_price' => $subTotal,
-                'tax_rate' => $taxRate,
-                'tax_amount' => $taxAmount
+                'total_price' => $calculation['total'],
+                'sub_total_price' => $calculation['subTotal'],
+                'tax_rate' => $calculation['taxRate'],
+                'tax_amount' => $calculation['taxAmount']
             ]);
 
             // attach data to order_product table
