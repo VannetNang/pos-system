@@ -29,7 +29,9 @@ class PaymentController extends Controller
                     'message' => 'Not enough stock for one or more products.',
                     'data' => [
                         'product_name' => $item->product->name,
-                        'available_stock' => $item->product->stock_quantity
+                        'available_stock' => ($item->product->stock_quantity === 0) 
+                                                ? 'sold out'
+                                                : $item->product->stock_quantity
                     ],
                 ]);
             }

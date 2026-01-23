@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -41,6 +42,23 @@ class CartController extends Controller
             $newQuantity = $cartItem->quantity + ($request->quantity ?? 1);
         } else {
             $newQuantity = ($request->quantity ?? 1);
+        }
+
+        // check if the selected quantity > stock quantity
+        $selectedProduct = Product::where('id', $request->product_id)
+                                ->firstOrFail();
+
+        if ($newQuantity > $selectedProduct->stock_quantity) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Not enough stock for one or more products.',
+                    'data' => [
+                        'product_name' => $selectedProduct->name,
+                        'available_stock' => ($selectedProduct->stock_quantity === 0) 
+                                                ? 'sold out' 
+                                                : $selectedProduct->stock_quantity
+                    ],
+            ]);
         }
 
         // first array for unchanged data
