@@ -8,13 +8,19 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
+
+// Authenticated user info - limit: userRate
+Route::middleware(['auth:sanctum', 'throttle:userRate'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('/products', ProductController::class);
 
-Route::prefix('/user')->group(function () {
+// Products - limit: productRate
+Route::middleware('throttle:productRate')->apiResource('/products', ProductController::class);
+
+
+// User routes - limit: userRate
+Route::prefix('/user')->middleware('throttle:userRate')->group(function () {
     Route::middleware('auth:sanctum')->post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
 
@@ -23,14 +29,18 @@ Route::prefix('/user')->group(function () {
     Route::middleware(['auth:sanctum'])->delete('/{id}', [UserController::class, 'deleteUser']);
 });
 
-Route::middleware('auth:sanctum')->apiResource('/carts', CartController::class);
 
-Route::middleware('auth:sanctum')->prefix('/orders')->group(function () {
+// Carts - limit: cartRate
+Route::middleware(['auth:sanctum', 'throttle:cartRate'])->apiResource('/carts', CartController::class);
+
+
+// Orders & Checkout - limit: checkoutRate
+Route::prefix('/orders')->middleware(['auth:sanctum', 'throttle:checkoutRate'])->group(function () {
     Route::get('/', [OrderController::class, 'index']);
     Route::get('/summary', [OrderController::class, 'orderSummary']);
 
     // url for payment gateway
-    Route::prefix('/checkout')->group(function() {
+    Route::prefix('/checkout')->group(function () {
         // Cash payment
         Route::post('/cash', [OrderController::class, 'cashCheckout']);
 
