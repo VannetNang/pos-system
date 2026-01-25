@@ -15,10 +15,11 @@ use KHQR\Models\IndividualInfo;
 
 class PaymentController extends Controller
 {
-    public function qrCheckout(Request $request, OrderCalculationService $calculator) {
+    public function qrCheckout(Request $request, OrderCalculationService $calculator)
+    {
         $cartItems = Cart::where('user_id', $request->user()->id)
-                        ->with('product')
-                        ->get();
+            ->with('product')
+            ->get();
 
         $calculation = $calculator->calculation($cartItems);
 
@@ -29,9 +30,9 @@ class PaymentController extends Controller
                     'message' => 'Not enough stock for one or more products.',
                     'data' => [
                         'product_name' => $item->product->name,
-                        'available_stock' => ($item->product->stock_quantity === 0) 
-                                                ? 'sold out'
-                                                : $item->product->stock_quantity
+                        'available_stock' => ($item->product->stock_quantity === 0)
+                            ? 'sold out'
+                            : $item->product->stock_quantity
                     ],
                 ]);
             }
@@ -70,12 +71,13 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function verifyTransaction(Request $request){
+    public function verifyTransaction(Request $request)
+    {
         $request->validate([
             'md5' => ['required', 'string']
         ]);
 
-        try {    
+        try {
             $bakongKhqr = new BakongKHQR(config('bakong.token'));
 
             $response = $bakongKhqr->checkTransactionByMD5($request->md5);
@@ -92,18 +94,18 @@ class PaymentController extends Controller
             // if success
             DB::transaction(function () use ($request) {
                 $cartItems = Cart::where('user_id', $request->user()->id)
-                        ->with(['product' => function ($query) {
-                            // lock the product cause it contains stock quantity
-                            // it makes sure: users can't checkout the same product at the same time
-                            // else: it will cause overselling (stock_quantity = -1) 
-                            $query->lockForUpdate();
-                        }])
-                        ->get();
+                    ->with(['product' => function ($query) {
+                        // lock the product cause it contains stock quantity
+                        // it makes sure: users can't checkout the same product at the same time
+                        // else: it will cause overselling (stock_quantity = -1) 
+                        $query->lockForUpdate();
+                    }])
+                    ->get();
 
                 $order = Order::where('user_id', $request->user()->id)
-                            ->where('status', 'pending')
-                            ->where('payment_method', 'khqr')
-                            ->firstOrFail();
+                    ->where('status', 'pending')
+                    ->where('payment_method', 'khqr')
+                    ->firstOrFail();
 
                 // attach data to order_product table
                 foreach ($cartItems as $item) {
@@ -113,7 +115,7 @@ class PaymentController extends Controller
                     ]);
 
                     // decrease the quantity from products DB
-                    $item->product->decrement('stock_quantity',$item->quantity);
+                    $item->product->decrement('stock_quantity', $item->quantity);
                 }
 
                 // update the status
@@ -122,13 +124,12 @@ class PaymentController extends Controller
                 // clear cart
                 Cart::where('user_id', $request->user()->id)->delete();
             });
-            
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Transaction verified successfully.',
                 'data' => $response['data']
             ], 200);
-
         } catch (\Exception $error) {
             return response()->json([
                 'status' => 'error',
