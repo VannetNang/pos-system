@@ -49,7 +49,7 @@ class ProductController extends Controller implements HasMiddleware
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric'],
             'imageUrl' => ['nullable', 'image', 'mimes:jpg,png,webp', 'max:2048'],
-            'stock_quantity' => ['required', 'integer'],
+            'stock_quantity' => ['nullable', 'integer'],
         ]);
 
         if ($request->hasFile('imageUrl')) {

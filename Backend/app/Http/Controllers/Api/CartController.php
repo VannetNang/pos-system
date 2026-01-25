@@ -13,7 +13,7 @@ class CartController extends Controller
     public function index(Request $request) {
         $cart = Cart::where('user_id', $request->user()->id)
                     // specify column, instead of sending all data (using 'product')
-                    ->with('product:id,name,description,price,stock_quantity,imageUrl')
+                    ->with('product:id,name,description,price,stock_quantity,image_url')
                     ->get();
 
         return response()->json([
@@ -84,7 +84,7 @@ class CartController extends Controller
         // find by user_id and product_id is more accurate and convenient than cart_id for front-end
         $cart = Cart::where('user_id', $request->user()->id)
                     ->where('product_id', $id)
-                    ->with('product:id,name,description,price,stock_quantity,imageUrl')
+                    ->with('product:id,name,description,price,stock_quantity,image_url')
                     ->first();
 
         if (!$cart) {

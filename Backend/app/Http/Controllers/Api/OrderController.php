@@ -12,11 +12,12 @@ use Illuminate\Support\Facades\DB;
 class OrderController extends Controller
 {
     // render all completed payment in DB
-    public function index() {
+    public function index()
+    {
         $orders = Order::where('status', 'completed')
-                        ->with('user')
-                        ->with('products:id,name,price,stock_quantity,imageUrl')
-                        ->get();
+            ->with('user')
+            ->with('products:id,name,price,stock_quantity,image_url')
+            ->get();
 
         if ($orders->isEmpty()) {
             return response()->json([
@@ -24,7 +25,7 @@ class OrderController extends Controller
                 'message' => 'There are no orders.',
             ], 404);
         }
-        
+
         return response()->json([
             'status' => 'success',
             'message' => 'Order summary retrieved successfully.',
@@ -32,14 +33,15 @@ class OrderController extends Controller
                 'order' => $orders
             ]
         ], 200);
-    } 
+    }
 
     // generate checkout summary data (total, subTotal, taxRate, taxAmount)
     // and items that we order
-    public function orderSummary(Request $request, OrderCalculationService $calculator) {
+    public function orderSummary(Request $request, OrderCalculationService $calculator)
+    {
         $cartItems = Cart::where('user_id', $request->user()->id)
-                        ->with('product')
-                        ->get();
+            ->with('product')
+            ->get();
 
         if ($cartItems->isEmpty()) {
             return response()->json([
@@ -54,7 +56,7 @@ class OrderController extends Controller
                 'product_name' => $item->product->name,
                 'product_price' => $item->product->price,
                 'product_quantity' => $item->quantity,
-                'product_subTotal' => $item->product->price * $item->quantity 
+                'product_subTotal' => $item->product->price * $item->quantity
             ];
         });
 
@@ -74,7 +76,8 @@ class OrderController extends Controller
     }
 
     // payment method = cash
-    public function cashCheckout(Request $request, OrderCalculationService $calculator){
+    public function cashCheckout(Request $request, OrderCalculationService $calculator)
+    {
         $request->validate([
             'payment_method' => ['required', 'in:cash']
         ]);
@@ -83,13 +86,13 @@ class OrderController extends Controller
             $order = DB::transaction(function () use ($request, $calculator) {
 
                 $cartItems = Cart::where('user_id', $request->user()->id)
-                                ->with(['product' => function ($query) {
-                                    // lock the product cause it contains stock quantity
-                                    // it makes sure: users can't checkout the same product at the same time
-                                    // else: it will cause overselling (stock_quantity = -1) 
-                                    $query->lockForUpdate();
-                                }])
-                                ->get();
+                    ->with(['product' => function ($query) {
+                        // lock the product cause it contains stock quantity
+                        // it makes sure: users can't checkout the same product at the same time
+                        // else: it will cause overselling (stock_quantity = -1) 
+                        $query->lockForUpdate();
+                    }])
+                    ->get();
 
                 if ($cartItems->isEmpty()) {
                     throw new \Exception('CART_EMPTY');
@@ -124,7 +127,7 @@ class OrderController extends Controller
                     ]);
 
                     // decrease the quantity from products DB
-                    $item->product->decrement('stock_quantity',$item->quantity);
+                    $item->product->decrement('stock_quantity', $item->quantity);
                 }
 
                 // clear cart
@@ -138,11 +141,10 @@ class OrderController extends Controller
                 'message' => 'Cash checkout completed successfully.',
                 'data' => [
                     'order' => $order->load(
-                        'products:id,name,price,stock_quantity,imageUrl'
+                        'products:id,name,price,stock_quantity,image_url'
                     )
                 ]
             ], 201);
-
         } catch (\Exception $e) {
             if ($e->getMessage() === 'CART_EMPTY') {
                 return response()->json([
@@ -160,9 +162,9 @@ class OrderController extends Controller
                     'message' => 'Not enough stock for one or more products.',
                     'data' => [
                         'product_name' => $productName,
-                        'available_stock' => ($availableStock === 0) 
-                                                ? 'sold out' 
-                                                : $availableStock,
+                        'available_stock' => ($availableStock === 0)
+                            ? 'sold out'
+                            : $availableStock,
                     ],
                 ], 400);
             }
@@ -173,5 +175,4 @@ class OrderController extends Controller
             ], 500);
         }
     }
-
 }

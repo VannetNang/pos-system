@@ -18,8 +18,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             // decimal(name, total digits, digits after decimal -> ".")
             $table->decimal('price', 12, 2);
-            $table->string('imageUrl')->nullable();
-            $table->integer('stock_quantity')->default(0);
+            $table->string('image_url')->nullable();
+            $table->integer('stock_quantity')->default(1);
             $table->timestamps();
         });
     }
