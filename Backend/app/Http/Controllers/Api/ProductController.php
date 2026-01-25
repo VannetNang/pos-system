@@ -22,11 +22,17 @@ class ProductController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         // to get the creator info (user)
         // return Product::with('creator')->get();
-        $products = Product::all();
+        $products = Product::when($request->search, function ($query) use ($request) {
+            return $query->whereAny([
+                'name',
+                'description',
+                'price'
+            ], 'like', '%' . $request->search . '%');
+        })->latest()->paginate(10);
 
         return response()->json([
             'status' => 'success',

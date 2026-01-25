@@ -11,7 +11,25 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function register(Request $request) {        
+    // display all users (staff account)
+    public function index(Request $request)
+    {   
+        Gate::authorize('modify', Product::class);
+        
+        $fields = User::where('role', 'staff');
+
+        $staffs = $fields->when($request->search, function ($query) use ($request) {
+            return $query->whereAny([
+                'name',
+            ], 'like', '%' . $request->search . '%');
+        })->latest()->paginate(10);
+
+        return $staffs;
+    }
+    public function register(Request $request)
+    {
+        Gate::authorize('modify', Product::class);
+
         $fields = $request->validate([
             'name' => ['required', 'min:2', 'max:255'],
             // unique:db_table,column  (no space)
@@ -26,15 +44,16 @@ class UserController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => "Welcome, {$user->name}! Your account has been created.", 
+            'message' => "Welcome, {$user->name}! Your account has been created.",
             'data' => [
                 'user' => $user,
                 'token' => $token
-            ]       
+            ]
         ], 201);
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $fields = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required']
@@ -68,7 +87,8 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $request->user()->tokens()->delete();
 
         return response()->json([
@@ -77,7 +97,8 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function deleteUser(Request $request, string $id) {
+    public function deleteUser(Request $request, string $id)
+    {
         Gate::authorize('modify', Product::class);
 
         $user = User::findOrFail($id);

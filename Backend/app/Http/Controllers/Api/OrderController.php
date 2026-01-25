@@ -15,9 +15,9 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::where('status', 'completed')
-            ->with('user')
-            ->with('products:id,name,price,stock_quantity,image_url')
-            ->get();
+            ->with(['user' . 'products:id,name,price,stock_quantity,image_url'])
+            ->latest()
+            ->paginate(10);
 
         if ($orders->isEmpty()) {
             return response()->json([

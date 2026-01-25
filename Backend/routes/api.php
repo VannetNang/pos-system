@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\Route;
 
 
 // Authenticated user info - limit: userRate
+    // for display current user INFO
 Route::middleware(['auth:sanctum', 'throttle:userRate'])->get('/user', function (Request $request) {
     return $request->user();
 });
+    // for display all users (ADMIN ONLY)
+Route::middleware(['auth:sanctum', 'throttle:userRate'])->get('/users', [UserController::class, 'index']);
 
 
 // Products - limit: productRate
