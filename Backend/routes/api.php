@@ -51,6 +51,7 @@ Route::prefix('/orders')->middleware(['auth:sanctum', 'throttle:checkoutRate'])-
         Route::prefix('/qr')->group(function () {
             Route::post('/', [PaymentController::class, 'qrCheckout']);
             Route::post('/verify', [PaymentController::class, 'verifyTransaction']);
+            Route::post('/cancel', [PaymentController::class, 'cancelTransaction']);
         });
     });
 });

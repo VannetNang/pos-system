@@ -17,6 +17,10 @@ class PaymentController extends Controller
 {
     public function qrCheckout(Request $request, OrderCalculationService $calculator)
     {
+        $request->validate([
+            'payment_method' => ['required', 'in:khqr']
+        ]);
+
         $cartItems = Cart::where('user_id', $request->user()->id)
             ->with('product')
             ->get();
@@ -136,5 +140,27 @@ class PaymentController extends Controller
                 'message' => $error->getMessage()
             ], 500);
         }
+    }
+
+    public function cancelTransaction(Request $request)
+    {
+        $order = Order::where('user_id', $request->user()->id)
+            ->where('payment_method', 'khqr')
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$order) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pending KHQR order not found.'
+            ], 404);
+        }
+
+        $order->update(['status' => 'cancelled']);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Order cancelled successfully.'
+        ]);
     }
 }
