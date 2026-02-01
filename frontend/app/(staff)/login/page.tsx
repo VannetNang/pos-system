@@ -83,7 +83,11 @@ const Login = () => {
                 )}
               </div>
 
-              <Button type="submit" className="w-full h-10" disabled={isPending}>
+              <Button
+                type="submit"
+                className="w-full h-10"
+                disabled={isPending}
+              >
                 Login
               </Button>
             </div>
