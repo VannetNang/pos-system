@@ -1,7 +1,3 @@
-import { redirect } from "next/navigation";
+const Home = () => {};
 
-const page = () => {
-  redirect("/login");
-};
-
-export default page;
+export default Home;
