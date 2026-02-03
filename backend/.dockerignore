@@ -1,33 +1,30 @@
-# Laravel / PHP
-vendor
+# Node / npm / frontend stuff if you build outside Docker
 node_modules
 npm-debug.log
-pnpm-lock.yaml
-yarn.lock
-package-lock.json
-.env
-.env.*
-.phpunit.result.cache
+yarn-error.log
+public/build
 
-# IDEs and OS files
-.vscode
+# Composer stuff you don’t want in build context
+vendor
+
+# IDE / OS files
 .idea
+.vscode
 .DS_Store
+*.swp
+
+# Git
 .git
+.gitignore
 
-# Logs, cache, runtime
-/storage/logs
-/storage/framework/cache
-/storage/framework/sessions
-/storage/framework/views
-/storage/*.key
+# Environment / secrets
+.env
+.env.local
+.env.*.backup
 
-# Tests and docs
-/tests
-/.github
-
-# Build outputs
-/public/storage
-
-# Ignore local composer binary
-/composer.phar
+# Storage and cache (Laravel runtime)
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
