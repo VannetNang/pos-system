@@ -1,0 +1,33 @@
+# Laravel / PHP
+vendor
+node_modules
+npm-debug.log
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+.env
+.env.*
+.phpunit.result.cache
+
+# IDEs and OS files
+.vscode
+.idea
+.DS_Store
+.git
+
+# Logs, cache, runtime
+/storage/logs
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/views
+/storage/*.key
+
+# Tests and docs
+/tests
+/.github
+
+# Build outputs
+/public/storage
+
+# Ignore local composer binary
+/composer.phar
