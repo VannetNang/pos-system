@@ -12,7 +12,7 @@ export const getAuthUser = async (): Promise<User | null> => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
+        Accept: "application/json", 
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
