@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Services\GetPublicImageId;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -54,13 +56,16 @@ class ProductController extends Controller implements HasMiddleware
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric'],
-            'imageUrl' => ['nullable', 'image', 'mimes:jpg,png,webp', 'max:2048'],
+            'image_url' => ['nullable', 'image', 'mimes:jpg,png,webp', 'max:2048'],
             'stock_quantity' => ['nullable', 'integer'],
         ]);
 
-        if ($request->hasFile('imageUrl')) {
-            $path = $request->file('imageUrl')->store('products', 'public');
-            $fields['imageUrl'] = $path;
+        if ($request->hasFile('image_url')) {
+            $result = Cloudinary::uploadApi()->upload($request->file('image_url')->getRealPath(), [
+                'folder'    => 'products',
+            ]);
+
+            $fields['image_url'] = $result["secure_url"];
         }
 
         $product = $request->user()->products()->create($fields);
@@ -93,25 +98,32 @@ class ProductController extends Controller implements HasMiddleware
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id, GetPublicImageId $calculator)
     {
         $fields = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric'],
-            'imageUrl' => ['nullable', 'image', 'mimes:jpg,png,webp', 'max:2048'],
-            'stock_quantity' => ['required', 'integer'],
+            'price' => ['nullable', 'numeric'],
+            'image_url' => ['nullable', 'image', 'mimes:jpg,png,webp', 'max:2048'],
+            'stock_quantity' => ['nullable', 'integer'],
         ]);
 
         $product = Product::findOrFail($id);
 
-        if ($request->hasFile('imageUrl')) {
-            if ($product->imageUrl && Storage::disk('public')->exists($product->imageUrl)) {
-                Storage::disk('public')->delete($product->imageUrl);
-            }
+        if ($request->hasFile('image_url')) {
+            $publicId = $calculator->getPublicImageId($product->image_url);
 
-            $path = $request->file('imageUrl')->store('products', 'public');
-            $fields['imageUrl'] = $path;
+            // delete the old image first
+            Cloudinary::uploadApi()->destroy($publicId, [
+                'invalidate' => true,
+            ]);
+
+            // then add the new one
+            $result = Cloudinary::uploadApi()->upload($request->file('image_url')->getRealPath(), [
+                'folder'    => 'products',
+            ]);
+
+            $fields['image_url'] = $result["secure_url"];
         }
 
         $product->update($fields);
@@ -128,12 +140,16 @@ class ProductController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, GetPublicImageId $calculator)
     {
         $product = Product::findOrFail($id);
 
-        if ($product->imageUrl && Storage::disk('public')->exists($product->imageUrl)) {
-            Storage::disk('public')->delete($product->imageUrl);
+        if ($product->image_url) {
+            $publicId = $calculator->getPublicImageId($product->image_url);
+
+            Cloudinary::uploadApi()->destroy($publicId, [
+                'invalidate' => true,
+            ]);
         }
 
         $product->delete();
