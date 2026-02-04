@@ -1,29 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser } from "./actions/getAuthUser";
 
-const protectedRoutes = ["/dashboard"];
 const publicRoutes = ["/login"];
 
 export const proxy = async (req: NextRequest) => {
   const path = req.nextUrl.pathname;
-  const isProtected = protectedRoutes.includes(path);
+  const isProtected =
+    path.startsWith("/dashboard") || path.startsWith("/admin");
   const isPublic = publicRoutes.includes(path);
   const user = await getAuthUser();
-
-  // ignore "/" home page
-  if (path === "/") {
-    return user
-      ? NextResponse.redirect(new URL("/dashboard", req.nextUrl))
-      : NextResponse.redirect(new URL("/login", req.nextUrl));
-  }
+  const isAdmin = user?.role === "admin";
 
   // access a protected route without login
   if (!user && isProtected) {
     return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 
-  // if logged in and try to access a public route (like login)
+  // ignore "/" home page
+  if (path === "/") {
+    if (!user) {
+      return NextResponse.redirect(new URL("/login", req.nextUrl));
+    }
+
+    const dashboard = isAdmin ? "/admin/dashboard" : "/dashboard";
+    return NextResponse.redirect(new URL(dashboard, req.nextUrl));
+  }
+
+  // if logged in, but tryna access login page
   if (user && isPublic) {
+    const dashboard = isAdmin ? "/admin/dashboard" : "/dashboard";
+    return NextResponse.redirect(new URL(dashboard, req.nextUrl));
+  }
+
+  // if staff tryna access admin route
+  if (path.startsWith("/admin") && !isAdmin) {
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
   }
 

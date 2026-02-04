@@ -1,4 +1,4 @@
-import StaffDashboardSidebar from "@/components/pos/staff/staff-sidebar";
+import AdminSidebar from "@/components/pos/admin/admin-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import React from "react";
 
@@ -9,7 +9,7 @@ const layout = ({
 }>) => {
   return (
     <SidebarProvider>
-      <StaffDashboardSidebar />
+      <AdminSidebar />
 
       <main className="w-full">{children}</main>
     </SidebarProvider>

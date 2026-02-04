@@ -63,6 +63,6 @@ export async function submitLoginForm(_: any, formData: FormData) {
   }
 
   if (isSuccess) {
-    redirect("/dashboard");
+    redirect("/");
   }
 }

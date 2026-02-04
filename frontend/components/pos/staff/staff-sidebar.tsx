@@ -15,7 +15,7 @@ import {
 import { Package, Store, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 
-const DashboardSidebar = async () => {
+const StaffDashboardSidebar = async () => {
   const items = [
     { title: "Dashboard", icon: LayoutDashboard, url: "/dashboard" },
     { title: "Ordered", icon: Package, url: "/dashboard" },
@@ -74,4 +74,4 @@ const DashboardSidebar = async () => {
   );
 };
 
-export default DashboardSidebar;
+export default StaffDashboardSidebar;
