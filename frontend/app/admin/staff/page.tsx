@@ -1,8 +1,5 @@
-
 const StaffPage = () => {
-  return (
-    <div>StaffPage</div>
-  )
-}
+  return <div>Staff Page</div>;
+};
 
-export default StaffPage
+export default StaffPage;

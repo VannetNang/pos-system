@@ -3,7 +3,7 @@ import ProductCollection from "@/components/pos/staff/product-collection";
 import SearchBar from "@/components/shared/search-bar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
-const Dashboard = () => {
+const StaffDashboard = () => {
   return (
     <div className="grid grid-cols-3 mt-3">
       <div className="col-span-2">
@@ -27,4 +27,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default StaffDashboard;
