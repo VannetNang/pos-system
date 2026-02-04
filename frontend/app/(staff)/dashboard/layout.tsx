@@ -10,10 +10,8 @@ const layout = ({
   return (
     <SidebarProvider>
       <DashboardSidebar />
-      <main>
-        <SidebarTrigger />
-        {children}
-      </main>
+
+      <main className="w-full">{children}</main>
     </SidebarProvider>
   );
 };

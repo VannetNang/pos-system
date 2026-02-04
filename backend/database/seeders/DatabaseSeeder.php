@@ -13,11 +13,13 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        User::create([
-            'name' => 'Super Boing',
-            'email' => 'Boing@gmail.com',
-            'role' => 'admin',
-            'password' => Hash::make('123'),
-        ]);
+        User::updateOrCreate(
+            ['email' => 'Boing@gmail.com'],
+            [
+                'name' => 'Super Boing',
+                'role' => 'admin',
+                'password' => Hash::make('password'),
+            ]
+        );
     }
 }
