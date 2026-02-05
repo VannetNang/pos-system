@@ -1,9 +1,6 @@
-import { buttonVariants } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
+import { DataTable } from "@/components/pos/admin/product/data-table";
+import { columns } from "@/components/pos/admin/product/columns";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,7 +9,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import RenderCard from "./render-card";
+import RenderCard from "@/components/pos/admin/product/render-card";
+import { AddProduct } from "@/components/pos/admin/product/add-product";
 
 const ProductPage = () => {
   const data = [
@@ -133,15 +131,8 @@ const ProductPage = () => {
             Manage your product catalog, stock levels and pricing.
           </p>
         </div>
-        <Link
-          href="/add"
-          className={cn(
-            buttonVariants({ variant: "default" }),
-            "bg-blue-600 hover:bg-blue-700 text-white",
-          )}
-        >
-          <Plus className="mr-2 h-4 w-4" /> Add Product
-        </Link>
+
+        <AddProduct />
       </div>
 
       {/* Render Card */}
