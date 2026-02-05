@@ -84,10 +84,10 @@ export const columns: ColumnDef<Product>[] = [
 
       const statusColor =
         percentage <= 20
-          ? "bg-red-500"
+          ? "bg-red-600"
           : percentage < 50
-            ? "bg-orange-500"
-            : "bg-emerald-500";
+            ? "bg-orange-600"
+            : "bg-green-600";
 
       return (
         <div className="flex flex-col gap-1.5 min-w-30">

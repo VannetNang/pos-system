@@ -4,6 +4,15 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import RenderCard from "./render-card";
 
 const ProductPage = () => {
   const data = [
@@ -98,13 +107,23 @@ const ProductPage = () => {
   ];
 
   return (
-    <div className="p-8 bg-background text-foreground min-h-screen">
-      {/* 1. Breadcrumbs & Header */}
-      <nav className="text-xs text-muted-foreground mb-2 flex gap-2">
-        <span>Home</span> <span>&rsaquo;</span>
-        <span className="text-foreground font-medium">Inventory</span>
+    <div className="px-4 py-8 pr-14 bg-background text-foreground min-h-screen">
+      {/* Breadcrumbs & Header */}
+      <nav className="flex items-center space-x-2 mb-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/admin/dashboard">Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Products</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </nav>
-
       <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
@@ -118,15 +137,22 @@ const ProductPage = () => {
           href="/add"
           className={cn(
             buttonVariants({ variant: "default" }),
-            "bg-blue-600 hover:bg-blue-700 text-white", // Primary blue remains blue in both modes
+            "bg-blue-600 hover:bg-blue-700 text-white",
           )}
         >
           <Plus className="mr-2 h-4 w-4" /> Add Product
         </Link>
       </div>
 
-      {/* 4. Products Table */}
-      <div className="container mx-auto py-10">
+      {/* Render Card */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <RenderCard title="TOTAL PRODUCTS" value="8" category="product" />
+        <RenderCard title="LOW STOCK ALERTS" value="4" category="stock" />
+        <RenderCard title="INVENTORY VALUE" value="$252" category="inventory" />
+      </div>
+
+      {/* Products Table */}
+      <div className="py-10">
         <DataTable columns={columns} data={data} />
       </div>
     </div>

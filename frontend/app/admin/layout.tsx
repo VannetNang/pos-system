@@ -10,7 +10,7 @@ const layout = ({
   return (
     <SidebarProvider>
       <AdminSidebar />
-      <SidebarTrigger />
+      <SidebarTrigger className="mt-7 ml-2" /> 
       
       <main className="w-full">{children}</main>
     </SidebarProvider>
