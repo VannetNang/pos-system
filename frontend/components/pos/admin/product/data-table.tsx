@@ -55,7 +55,7 @@ export function DataTable({ columns, data }: { columns: any[]; data: any[] }) {
     },
     initialState: {
       pagination: {
-        pageSize: 10,
+        pageSize: 5,
       },
     },
   });

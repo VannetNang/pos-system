@@ -1,9 +1,10 @@
 export interface Product {
   id: number;
   name: string;
-  email: string;
-  role?: "admin" | "staff";
-  password: string;
+  description: string;
+  price: number;
+  image_url: string;
+  stock_quantity: number;
   created_at: string;
   updated_at: string;
 }

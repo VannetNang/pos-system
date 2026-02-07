@@ -17,10 +17,10 @@ import { ArrowUpDown } from "lucide-react";
 
 export type Product = {
   id: string;
-  imageUrl: string;
+  image_url: string;
   name: string;
   description: string;
-  stock: number;
+  stock_quantity: number;
   maxStock?: number;
   price: number;
 };
@@ -40,14 +40,14 @@ export const columns: ColumnDef<Product>[] = [
       );
     },
     cell: ({ row }) => {
-      const { imageUrl, name } = row.original;
+      const { image_url, name } = row.original;
 
       return (
         <div className="flex items-center gap-4">
           <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-muted border border-border/50 shadow-sm">
-            {imageUrl ? (
+            {image_url ? (
               <Image
-                src={imageUrl}
+                src={image_url}
                 alt={name}
                 fill
                 className="object-cover transition-transform hover:scale-110"
@@ -75,10 +75,10 @@ export const columns: ColumnDef<Product>[] = [
     ),
   },
   {
-    accessorKey: "stock",
+    accessorKey: "stock_quantity",
     header: "Stock Level",
     cell: ({ row }) => {
-      const stock = row.getValue("stock") as number;
+      const stock = row.getValue("stock_quantity") as number;
       const max = row.original.maxStock || 100;
       const percentage = Math.min(Math.round((stock / max) * 100), 100);
 

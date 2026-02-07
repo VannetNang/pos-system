@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller implements HasMiddleware
 {
@@ -24,17 +23,11 @@ class ProductController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
         // to get the creator info (user)
         // return Product::with('creator')->get();
-        $products = Product::when($request->search, function ($query) use ($request) {
-            return $query->whereAny([
-                'name',
-                'description',
-                'price'
-            ], 'like', '%' . $request->search . '%');
-        })->latest()->paginate(10);
+        $products = Product::all();
 
         return response()->json([
             'status' => 'success',

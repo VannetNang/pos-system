@@ -11,98 +11,107 @@ import {
 } from "@/components/ui/breadcrumb";
 import RenderCard from "@/components/pos/admin/product/render-card";
 import { AddProduct } from "@/components/pos/admin/product/add-product";
+import { Product } from "@/types/productType";
 
-const ProductPage = () => {
-  const data = [
-    {
-      id: "rec-001",
-      name: "Classic Ice Latte",
-      category: "Iced Coffee",
-      description:
-        "Our signature espresso chilled over ice with silky smooth milk.",
-      imageUrl:
-        "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
-      stock: 15,
-      price: 4.5,
-    },
-    {
-      id: "rec-002",
-      name: "Midnight Chocolate Latte",
-      category: "Specialty",
-      description:
-        "Rich dark chocolate melted into double-shot espresso and steamed milk.",
-      imageUrl:
-        "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
-      stock: 8,
-      price: 5.99,
-    },
-    {
-      id: "rec-003",
-      name: "Velvet Hot Latte",
-      category: "Hot Coffee",
-      description:
-        "The classic morning companion. Perfectly frothed and balanced.",
-      imageUrl:
-        "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
-      stock: 50,
-      price: 4.25,
-    },
-    {
-      id: "rec-004",
-      name: "Caramel Macchiato",
-      category: "Sweetened",
-      description:
-        "Freshly steamed milk with vanilla-flavored syrup marked with espresso.",
-      imageUrl:
-        "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
-      stock: 22,
-      price: 6.5,
-    },
-    {
-      id: "rec-005",
-      name: "Vanilla Bean Flat White",
-      category: "Hot Coffee",
-      description:
-        "Short and strong espresso shots with a hint of natural vanilla.",
-      imageUrl:
-        "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
-      stock: 12,
-      price: 5.25,
-    },
-    {
-      id: "rec-006",
-      name: "Hazelnut Praline Latte",
-      category: "Specialty",
-      description:
-        "Toasted hazelnut notes combined with our premium house blend.",
-      imageUrl:
-        "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
-      stock: 30,
-      price: 5.75,
-    },
-    {
-      id: "rec-007",
-      name: "Oat Milk Honey Latte",
-      category: "Dairy-Free",
-      description:
-        "Creamy oat milk and local honey for a guilt-free energy boost.",
-      imageUrl:
-        "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
-      stock: 18,
-      price: 6.25,
-    },
-    {
-      id: "rec-008",
-      name: "Matcha Green Tea Latte",
-      category: "Non-Coffee",
-      description:
-        "Premium ceremonial grade matcha whisked with your choice of milk.",
-      imageUrl:
-        "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
-      stock: 40,
-      price: 5.5,
-    },
-  ];
+const ProductPage = async () => {
+  // const data = [
+  //   {
+  //     id: "rec-001",
+  //     name: "Classic Ice Latte",
+  //     category: "Iced Coffee",
+  //     description:
+  //       "Our signature espresso chilled over ice with silky smooth milk.",
+  //     imageUrl:
+  //       "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
+  //     stock: 15,
+  //     price: 4.5,
+  //   },
+  //   {
+  //     id: "rec-002",
+  //     name: "Midnight Chocolate Latte",
+  //     category: "Specialty",
+  //     description:
+  //       "Rich dark chocolate melted into double-shot espresso and steamed milk.",
+  //     imageUrl:
+  //       "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
+  //     stock: 8,
+  //     price: 5.99,
+  //   },
+  //   {
+  //     id: "rec-003",
+  //     name: "Velvet Hot Latte",
+  //     category: "Hot Coffee",
+  //     description:
+  //       "The classic morning companion. Perfectly frothed and balanced.",
+  //     imageUrl:
+  //       "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
+  //     stock: 50,
+  //     price: 4.25,
+  //   },
+  //   {
+  //     id: "rec-004",
+  //     name: "Caramel Macchiato",
+  //     category: "Sweetened",
+  //     description:
+  //       "Freshly steamed milk with vanilla-flavored syrup marked with espresso.",
+  //     imageUrl:
+  //       "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
+  //     stock: 22,
+  //     price: 6.5,
+  //   },
+  //   {
+  //     id: "rec-005",
+  //     name: "Vanilla Bean Flat White",
+  //     category: "Hot Coffee",
+  //     description:
+  //       "Short and strong espresso shots with a hint of natural vanilla.",
+  //     imageUrl:
+  //       "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
+  //     stock: 12,
+  //     price: 5.25,
+  //   },
+  //   {
+  //     id: "rec-006",
+  //     name: "Hazelnut Praline Latte",
+  //     category: "Specialty",
+  //     description:
+  //       "Toasted hazelnut notes combined with our premium house blend.",
+  //     imageUrl:
+  //       "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
+  //     stock: 30,
+  //     price: 5.75,
+  //   },
+  //   {
+  //     id: "rec-007",
+  //     name: "Oat Milk Honey Latte",
+  //     category: "Dairy-Free",
+  //     description:
+  //       "Creamy oat milk and local honey for a guilt-free energy boost.",
+  //     imageUrl:
+  //       "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
+  //     stock: 18,
+  //     price: 6.25,
+  //   },
+  //   {
+  //     id: "rec-008",
+  //     name: "Matcha Green Tea Latte",
+  //     category: "Non-Coffee",
+  //     description:
+  //       "Premium ceremonial grade matcha whisked with your choice of milk.",
+  //     imageUrl:
+  //       "https://res.cloudinary.com/dbn9nkjum/image/upload/v1748955142/b3fkfpiv8l03diek8xoq.png",
+  //     stock: 40,
+  //     price: 5.5,
+  //   },
+  // ];
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
+
+  const { data } = await response.json();
+
+  // const data: Product = result;
+
+  console.log(data);
 
   return (
     <div className="px-4 py-8 pr-14 bg-background text-foreground min-h-screen">
@@ -144,7 +153,7 @@ const ProductPage = () => {
 
       {/* Products Table */}
       <div className="py-10">
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data?.products?.data} />
       </div>
     </div>
   );

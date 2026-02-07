@@ -15,9 +15,9 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::where('status', 'completed')
-            ->with(['user' . 'products:id,name,price,stock_quantity,image_url'])
+            ->with(['user', 'products:id,name,price,stock_quantity,image_url'])
             ->latest()
-            ->paginate(10);
+            ->get();
 
         if ($orders->isEmpty()) {
             return response()->json([
@@ -30,7 +30,7 @@ class OrderController extends Controller
             'status' => 'success',
             'message' => 'Order summary retrieved successfully.',
             'data' => [
-                'order' => $orders
+                'orders' => $orders
             ]
         ], 200);
     }
