@@ -41,7 +41,7 @@ export async function submitLoginForm(_: any, formData: FormData) {
       return {
         message: data.error || "Authentication failed.",
       };
-    }  
+    }
 
     const cookie = await cookies();
     cookie.set("token", data.data.token, {
