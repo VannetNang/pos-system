@@ -27,7 +27,7 @@ class ProductController extends Controller implements HasMiddleware
     {
         // to get the creator info (user)
         // return Product::with('creator')->get();
-        $products = Product::all();
+        $products = Product::latest()->get(); 
 
         return response()->json([
             'status' => 'success',
