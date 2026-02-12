@@ -33,6 +33,7 @@ import { toast } from "sonner";
 export function AddProduct() {
   const [preview, setPreview] = React.useState<string | null>(null);
   const [state, formAction, isPending] = useActionState(addProductForm, null);
+  const [open, setOpen] = React.useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -52,6 +53,7 @@ export function AddProduct() {
   // use this to get toast message and refresh UI after add new product
   useEffect(() => {
     if (state?.success) {
+      setOpen(false);
       toast.success("Product Created Successfully", {
         position: "top-right",
         duration: 3000,
@@ -83,7 +85,7 @@ export function AddProduct() {
   }, [state?.errors]);
 
   return (
-    <Dialog onOpenChange={(open) => !open && setPreview(null)}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-md active:scale-95">
           <Plus className="mr-2 h-4 w-4" /> Add Product
