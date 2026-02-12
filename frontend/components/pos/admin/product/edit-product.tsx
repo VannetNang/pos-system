@@ -15,24 +15,28 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Plus,
-  UploadCloud,
-  PackagePlus,
-  X,
-  Box,
-  DollarSign,
-} from "lucide-react";
+import { UploadCloud, X, Box, DollarSign, Edit3 } from "lucide-react";
 import { useActionState, useEffect } from "react";
-import { FieldLabel } from "@/components/ui/field";
-import { addProductForm } from "@/actions/product/addProductForm";
-import { cn } from "@/lib/utils";
+import { editProductForm } from "@/actions/product/editProductForm";
 import { toast } from "sonner";
+import { Product } from "@/types/productType";
+import { cn } from "@/lib/utils";
+import { Textarea } from "@/components/ui/textarea";
+import { FieldLabel } from "@/components/ui/field";
 
-export function AddProduct() {
-  const [preview, setPreview] = React.useState<string | null>(null);
-  const [state, formAction, isPending] = useActionState(addProductForm, null);
+export function EditProduct({
+  product,
+  onSuccess,
+}: {
+  product: Product;
+  onSuccess?: () => void;
+}) {
+  const [preview, setPreview] = React.useState<string | null>(
+    product.image_url || null,
+  );
+
+  const [state, formAction, isPending] = useActionState(editProductForm, null);
+  const [open, setOpen] = React.useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -44,15 +48,19 @@ export function AddProduct() {
 
   const removeImage = () => {
     setPreview(null);
-    // remove the value input as well, or else the admin cannot upload the same image twice
-    const fileInput = document.getElementById("image") as HTMLInputElement;
+
+    const fileInput = document.getElementById(
+      `edit-image-${product.id}`,
+    ) as HTMLInputElement;
+
     if (fileInput) fileInput.value = "";
   };
 
-  // use this to get toast message and refresh UI after add new product
   useEffect(() => {
     if (state?.success) {
-      toast.success("Product Created Successfully", {
+      setOpen(false);
+      if (onSuccess) onSuccess();
+      toast.success("Product Updated Successfully", {
         position: "top-right",
         duration: 3000,
         className: cn(
@@ -74,46 +82,66 @@ export function AddProduct() {
           fontWeight: "600",
         },
       });
-      setPreview(null);
     }
   }, [state?.success]);
 
   useEffect(() => {
-    removeImage();
+    if (state?.errors) {
+      toast.error(state.message, {
+        position: "top-right",
+        duration: 4000,
+        className: cn(
+          "group !bg-white dark:!bg-slate-950",
+          "!border-rose-500/20 dark:!border-rose-500/30", // Rose border
+          "!text-rose-900 dark:!text-rose-50", // Rose text
+          "shadow-2xl backdrop-blur-md",
+          "!w-max !max-w-[80vw] whitespace-nowrap", // make the message stay in one-line
+        ),
+        icon: (
+          <div className="relative flex h-2 w-2 mr-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]"></span>
+          </div>
+        ),
+        style: {
+          borderRadius: "12px",
+          padding: "16px",
+          fontSize: "14px",
+          fontWeight: "600",
+        },
+      });
+    }
   }, [state?.errors]);
 
   return (
-    <Dialog onOpenChange={(open) => !open && setPreview(null)}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-md active:scale-95">
-          <Plus className="mr-2 h-4 w-4" /> Add Product
-        </Button>
+        <div className="hover:bg-slate-100 flex mt-1 items-center w-full px-2 py-1.5 transition-all text-sm cursor-pointer rounded-sm">
+          <Edit3 className="mr-3 h-4 w-4 text-blue-500" />
+          <span>Edit Product</span>
+        </div>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-120 p-0 overflow-hidden border-none shadow-2xl">
         <form action={formAction}>
+          <input type="hidden" name="id" value={product.id} />
+
           <DialogHeader className="p-6 bg-slate-50 dark:bg-slate-900/50 border-b">
             <div className="flex items-center gap-2 mb-1">
-              <PackagePlus className="h-5 w-5 text-blue-600" />
-              <DialogTitle className="text-xl">Add New Product</DialogTitle>
+              <Edit3 className="h-5 w-5 text-blue-600" />
+              <DialogTitle className="text-xl">Edit Product</DialogTitle>
             </div>
             <DialogDescription>
-              Enter the product details to update your inventory stock.
+              Updating product's name: {product.name}
             </DialogDescription>
           </DialogHeader>
 
           <div className="p-6 space-y-5">
-            {/* Image Upload Area */}
+            {/* Image Area */}
             <div className="space-y-2">
-              <Label
-                className={cn(
-                  "text-xs font-bold uppercase tracking-wider text-muted-foreground",
-                  state?.errors?.image_url && "text-red-600",
-                )}
-              >
+              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Product Image
               </Label>
-
               {preview ? (
                 <div className="relative h-32 w-full rounded-xl overflow-hidden border border-border">
                   <Image
@@ -134,7 +162,7 @@ export function AddProduct() {
                 </div>
               ) : (
                 <label
-                  htmlFor="image"
+                  htmlFor={`edit-image-${product.id}`}
                   className={cn(
                     "group relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-muted rounded-xl bg-muted/20 hover:bg-muted/40 hover:border-blue-400 transition-all cursor-pointer",
                     state?.errors && "border-red-500",
@@ -146,33 +174,20 @@ export function AddProduct() {
                   </p>
                 </label>
               )}
-
-              {/* File cannot have pre-filled which is defaultValue */}
               <Input
-                id="image"
+                id={`edit-image-${product.id}`}
                 name="image_url"
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
                 className="hidden"
               />
-              {state?.errors?.image_url ? (
-                <p className="text-xs text-red-600 mt-1">
-                  {state.errors.image_url[0]}
-                </p>
-              ) : (
-                state?.errors && (
-                  <p className="text-xs text-red-600 mt-1">
-                    Please re-select the image
-                  </p>
-                )
-              )}
             </div>
 
-            {/* Product Name */}
+            {/* Name */}
             <div className="space-y-2">
               <Label
-                htmlFor="name"
+                htmlFor={`name-${product.id}`}
                 className={cn(
                   "text-xs font-bold uppercase tracking-wider text-muted-foreground",
                   state?.errors?.name && "text-red-600",
@@ -181,13 +196,11 @@ export function AddProduct() {
                 Product Name
               </Label>
               <Input
-                id="name"
+                id={`name-${product.id}`}
                 name="name"
-                defaultValue={state?.inputs?.name?.toString()}
+                defaultValue={product.name}
                 aria-invalid={!!state?.errors?.name}
-                placeholder="e.g. Ice Latte"
                 className="bg-muted/30 focus:bg-background"
-                autoComplete="organization-title"
               />
               {state?.errors?.name && (
                 <p className="text-xs text-red-600 mt-1">
@@ -199,7 +212,7 @@ export function AddProduct() {
             {/* Description */}
             <div className="space-y-2">
               <FieldLabel
-                htmlFor="description"
+                htmlFor={`description-${product.id}`}
                 className={cn(
                   "text-xs font-bold uppercase tracking-wider text-muted-foreground",
                   state?.errors?.description && "text-red-600",
@@ -208,9 +221,9 @@ export function AddProduct() {
                 Product Description
               </FieldLabel>
               <Textarea
-                id="description"
+                id={`description-${product.id}`}
                 name="description"
-                defaultValue={state?.inputs?.description?.toString()}
+                defaultValue={product.description}
                 aria-invalid={!!state?.errors?.description}
                 placeholder="Brief details about origin, flavor, or popularity..."
                 className="min-h-24 resize-none"
@@ -223,7 +236,7 @@ export function AddProduct() {
               )}
             </div>
 
-            {/* Pricing & Stock Grid */}
+            {/* Price & Stock */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label
@@ -238,13 +251,11 @@ export function AddProduct() {
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="price"
+                    id={`price-${product.id}`}
                     name="price"
-                    defaultValue={state?.inputs?.price?.toString()}
+                    defaultValue={product.price}
                     aria-invalid={!!state?.errors?.price}
-                    placeholder="4.99"
-                    className="pl-9 bg-muted/30 focus:bg-white"
-                    autoComplete="transaction-amount"
+                    className="pl-9 bg-muted/30"
                   />
                 </div>
                 {state?.errors?.price && (
@@ -256,7 +267,7 @@ export function AddProduct() {
 
               <div className="space-y-2">
                 <Label
-                  htmlFor="stock_quantity"
+                  htmlFor={`stock-${product.id}`}
                   className={cn(
                     "text-xs font-bold uppercase tracking-wider text-muted-foreground",
                     state?.errors?.stock_quantity && "text-red-600",
@@ -267,13 +278,11 @@ export function AddProduct() {
                 <div className="relative">
                   <Box className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="stock_quantity"
+                    id={`stock-${product.id}`}
                     name="stock_quantity"
-                    defaultValue={state?.inputs?.stock_quantity?.toString()}
+                    defaultValue={product.stock_quantity}
                     aria-invalid={!!state?.errors?.stock_quantity}
-                    placeholder="100"
-                    className="pl-9 bg-muted/30 focus:bg-white"
-                    autoComplete="off"
+                    className="pl-9 bg-muted/30"
                   />
                 </div>
                 {state?.errors?.stock_quantity && (
@@ -285,7 +294,7 @@ export function AddProduct() {
             </div>
           </div>
 
-          <DialogFooter className="p-6 bg-slate-50 dark:bg-slate-900/50 border-t">
+          <DialogFooter className="p-6 bg-slate-50 border-t">
             <DialogClose asChild>
               <Button
                 variant="ghost"
@@ -300,7 +309,7 @@ export function AddProduct() {
               disabled={isPending}
               className="bg-blue-600 hover:bg-blue-700 text-white px-8"
             >
-              {isPending ? "Adding..." : "Add Product"}
+              {isPending ? "Updating..." : "Update Product"}
             </Button>
           </DialogFooter>
         </form>

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Pencil, Trash2, ExternalLink } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,16 +14,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpDown } from "lucide-react";
-
-export type Product = {
-  id: string;
-  image_url: string;
-  name: string;
-  description: string;
-  stock_quantity: number;
-  maxStock?: number;
-  price: number;
-};
+import { EditProduct } from "./edit-product";
+import { Product } from "@/types/productType";
+import { useState } from "react";
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -125,9 +118,11 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => {
       const product = row.original;
 
+      const [dropdownOpen, setDropdownOpen] = useState(false);
+
       return (
         <div className="text-right">
-          <DropdownMenu>
+          <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-muted">
                 <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
@@ -137,23 +132,18 @@ export const columns: ColumnDef<Product>[] = [
               <DropdownMenuLabel className="text-xs text-muted-foreground">
                 Actions
               </DropdownMenuLabel>
-              <DropdownMenuItem className="cursor-pointer">
-                <ExternalLink className="mr-2 h-4 w-4" /> View Details
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                asChild
-                className="cursor-pointer text-blue-600 focus:text-blue-600"
-              >
-                <Link href={`/admin/product/update/${product.id}`}>
-                  <Pencil className="mr-2 h-4 w-4" /> Edit Product
-                </Link>
-              </DropdownMenuItem>
+
+              <EditProduct
+                product={product}
+                onSuccess={() => setDropdownOpen(false)}
+              />
+
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 asChild
                 className="cursor-pointer text-red-600 focus:text-red-600"
               >
-                <Link href={`/admin/product/delete/${product.id}`}>
+                <Link href={`/admin/product`}>
                   <Trash2 className="mr-2 h-4 w-4" /> Delete
                 </Link>
               </DropdownMenuItem>
