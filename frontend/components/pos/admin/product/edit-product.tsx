@@ -118,7 +118,7 @@ export function EditProduct({
       <DialogTrigger asChild>
         <div className="hover:bg-slate-100 flex mt-1 items-center w-full px-2 py-1.5 transition-all text-sm cursor-pointer rounded-sm">
           <Edit3 className="mr-3 h-4 w-4 text-blue-500" />
-          <span>Edit Product</span>
+          <span className="text-blue-500">Update</span>
         </div>
       </DialogTrigger>
 

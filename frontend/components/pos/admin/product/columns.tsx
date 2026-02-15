@@ -17,6 +17,7 @@ import { ArrowUpDown } from "lucide-react";
 import { EditProduct } from "./edit-product";
 import { Product } from "@/types/productType";
 import { useState } from "react";
+import { DeleteProduct } from "./delete-product";
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -139,14 +140,18 @@ export const columns: ColumnDef<Product>[] = [
               />
 
               <DropdownMenuSeparator />
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 asChild
                 className="cursor-pointer text-red-600 focus:text-red-600"
               >
                 <Link href={`/admin/product`}>
                   <Trash2 className="mr-2 h-4 w-4" /> Delete
                 </Link>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
+              <DeleteProduct
+                product={product}
+                onSuccess={() => setDropdownOpen(false)}
+              />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

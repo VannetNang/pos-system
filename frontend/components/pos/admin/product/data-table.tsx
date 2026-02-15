@@ -148,7 +148,7 @@ export function DataTable({ columns, data }: { columns: any[]; data: any[] }) {
                   colSpan={columns.length}
                   className="h-32 text-center text-muted-foreground"
                 >
-                  No products found.
+                  No products found
                 </TableCell>
               </TableRow>
             )}
