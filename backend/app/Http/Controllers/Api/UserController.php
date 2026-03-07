@@ -13,16 +13,12 @@ class UserController extends Controller
 {
     // display all users (staff account)
     public function index(Request $request)
-    {   
+    {
         Gate::authorize('modify', Product::class);
-        
-        $fields = User::where('role', 'staff');
 
-        $staffs = $fields->when($request->search, function ($query) use ($request) {
-            return $query->whereAny([
-                'name',
-            ], 'like', '%' . $request->search . '%');
-        })->latest()->paginate(10);
+        $staffs = User::where('role', 'staff')
+            ->latest()
+            ->get();;
 
         return $staffs;
     }
@@ -47,7 +43,7 @@ class UserController extends Controller
             'message' => "Welcome, {$user->name}! Your account has been created.",
             'data' => [
                 'user' => $user,
-                'token' => $token
+                'token' => $token,
             ]
         ], 201);
     }
